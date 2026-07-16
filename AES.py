@@ -18,6 +18,12 @@ def aes(message: str, p, g):
     else:
         raise MyError('Ошибка! Ключи secretKey1 и secretKey2 не равны (они известны только отправителю и адресату')
 
+    number_bytes = secretKey.to_bytes((secretKey.bit_length() + 7) // 8, 'big')
+    hkdf = HKDF(algorithm=hashes.SHA256(), length=16, salt=None, info=b"")
+    short_key = hkdf.derive(number_bytes)
+    short_key = short_key.hex()
+    short_key = ' '.join(short_key[i:i + 2] for i in range(0, len(short_key), 2))
+    
     message_byte = message.encode('utf-8').hex(' ').split()
 
     block_size = 16
