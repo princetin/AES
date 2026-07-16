@@ -60,7 +60,12 @@ def aes(message: str, p, g):
             np.roll(SubBytes_matrix[2], -2),
             np.roll(SubBytes_matrix[3], -3)
         ])
-        print(Shifted_roll_matrix)
+        #print(Shifted_roll_matrix)
+
+        Shifted_roll_matrix = [[int(x, 16) for x in row] for row in Shifted_roll_matrix]
+        MixColumns_matrix = mix_columns(Shifted_roll_matrix)
+        MixColumns_matrix = np.vectorize(hex)(MixColumns_matrix)
+        print(MixColumns_matrix)
 
 
 
