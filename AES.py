@@ -47,7 +47,7 @@ def aes(message: str, p, g):
         State_matrix = np.array(elements_in_blocks).reshape(4, 4).T
         RK_xor_matrix = hex_xor_matrices(State_matrix, short_key_matrix)
         #print(RK_xor)
-        RK_xor = np.array([[int(x, 16) for x in row] for row in RK_xor])
+        RK_xor_matrix = np.array([[int(x, 16) for x in row] for row in RK_xor_matrix])
 
         vectorized_sbox = np.vectorize(replacement_S_box)
         result_numbers = vectorized_sbox(RK_xor)
