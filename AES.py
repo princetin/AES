@@ -50,8 +50,8 @@ def aes(message: str, p, g):
         RK_xor_matrix = np.array([[int(x, 16) for x in row] for row in RK_xor_matrix])
 
         vectorized_sbox = np.vectorize(replacement_S_box)
-        result_numbers = vectorized_sbox(RK_xor)
-        SubBytes = np.array([[f'{x:02x}' for x in row] for row in result_numbers])
+        result_numbers = vectorized_sbox(RK_xor_matrix)
+        SubBytes_matrix = np.array([[f'{x:02x}' for x in row] for row in result_numbers])
         #print(SubBytes)
 
 
