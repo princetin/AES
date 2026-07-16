@@ -1,5 +1,6 @@
 from XOR import hex_xor_matrices
 from XOR import pading_block
+from XOR import mix_columns
 from XOR import SBOX
 from XOR import replacement_S_box
 import secrets
