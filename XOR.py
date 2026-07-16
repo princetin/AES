@@ -24,7 +24,3 @@ def xor(a: hex, b: hex):
             string += str(orange(int(a[i]), int(b[i])))
 
     return string.zfill(8)
-
-
-
-print(xor(0xaa, 0x55))
