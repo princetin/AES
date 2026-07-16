@@ -64,3 +64,41 @@ def replacement_S_box(byte):
     return SBOX[byte]
 
 print(hex(replacement_S_box(0x06)))
+
+
+def mul2(x):
+    result = (x << 1) & 0xFF
+    if (x & 0x80) == 0x80:
+        result ^= 0x1B
+    return result
+
+
+def mul3(x):
+    return mul2(x) ^ x
+
+
+def mix_column(a0, a1, a2, a3):
+    b0 = mul2(a0) ^ mul3(a1) ^ a2 ^ a3
+    b1 = a0 ^ mul2(a1) ^ mul3(a2) ^ a3
+    b2 = a0 ^ a1 ^ mul2(a2) ^ mul3(a3)
+    b3 = mul3(a0) ^ a1 ^ a2 ^ mul2(a3)
+    return b0, b1, b2, b3
+
+
+def mix_columns(matrix):
+    new_matrix = [[0] * 4 for _ in range(4)]
+
+    for j in range(4):
+        a0 = matrix[0][j]
+        a1 = matrix[1][j]
+        a2 = matrix[2][j]
+        a3 = matrix[3][j]
+
+        b0, b1, b2, b3 = mix_column(a0, a1, a2, a3)
+
+        new_matrix[0][j] = b0
+        new_matrix[1][j] = b1
+        new_matrix[2][j] = b2
+        new_matrix[3][j] = b3
+
+    return new_matrix
