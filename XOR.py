@@ -15,7 +15,6 @@ def orange(x: bin, y: bin):
     return result
 
 def hex_xor_matrices(mat1, mat2):
-    # Конвертируем строки в числа
     vec_func = np.vectorize(lambda x, y: f"{int(x, 16) ^ int(y, 16):02x}")
     return vec_func(mat1, mat2)
 
