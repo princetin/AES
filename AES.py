@@ -52,6 +52,7 @@ def aes(message: str, p, g):
     short_key_matrix = np.array(short_key).reshape(4, 4).T
 
     # раунд-ключи для начального AddRoundKey + 10 раундов AES-128
+    # secretKey (число, DH)  →  HKDF  →  short_key (16 байт, master key)  →  key_expansion  →  round_keys[0..10]
     round_keys = key_expansion(short_key_matrix, rounds=10)
 
     message_byte = message.encode('utf-8').hex(' ').split()
