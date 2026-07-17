@@ -60,6 +60,7 @@ def aes(message: str, p, g):
     block_size = 16
     blocks = [message_byte[i:i+block_size] for i in range(0, len(message_byte), block_size)]
 
+    # paddind:
     for i, block in enumerate(blocks):
         if len(block) < 16:
             blocks[i] = pading_block(block, 16, '0c')
