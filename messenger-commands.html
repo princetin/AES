@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тихо — команды и идеи</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#161615;
+    --ink-soft:#6b6a63;
+    --ink-faint:#a4a299;
+    --paper:#fbfaf7;
+    --panel:#ffffff;
+    --line:#e7e4dc;
+    --sage:#4f6f63;
+    --sage-tint:#e7efec;
+    --clay:#c96a5c;
+    --clay-tint:#f8e9e6;
+    --clay-ink:#8a3d31;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 32px;}
+
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:26px 32px;border-bottom:1px solid var(--line);
+  }
+  .dot-mark{width:10px;height:10px;border-radius:50%;background:var(--ink);}
+  .topbar .label{font-size:12px;letter-spacing:0.16em;font-weight:600;color:var(--ink-soft);text-transform:uppercase;}
+
+  header.hero{padding:64px 0 40px;}
+  header.hero .kicker{font-size:12px;letter-spacing:0.14em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:16px;}
+  header.hero h1{font-family:'Newsreader',serif;font-weight:400;font-size:38px;line-height:1.25;max-width:640px;}
+  header.hero h1 em{font-style:italic;color:var(--clay-ink);}
+  header.hero p{color:var(--ink-soft);font-size:15px;margin-top:16px;max-width:520px;}
+
+  section.category{padding:36px 0;border-top:1px solid var(--line);}
+  section.category h2{font-family:'Newsreader',serif;font-weight:500;font-size:21px;margin-bottom:6px;}
+  section.category .desc{font-size:13.5px;color:var(--ink-faint);margin-bottom:22px;}
+
+  .cmd-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .cmd{
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;
+  }
+  .cmd code{
+    font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--clay-ink);
+    background:var(--clay-tint);padding:2px 7px;border-radius:5px;display:inline-block;margin-bottom:8px;
+  }
+  .cmd p{font-size:13.5px;color:var(--ink-soft);}
+
+  section.ideas{padding:50px 0;border-top:1px solid var(--line);}
+  section.ideas .kicker{font-size:12px;letter-spacing:0.14em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:16px;}
+  section.ideas h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin-bottom:30px;max-width:600px;}
+
+  .idea{
+    display:grid;grid-template-columns:28px 1fr;gap:16px;padding:20px 0;border-top:1px solid var(--line);
+  }
+  .idea:first-of-type{border-top:1px solid var(--line);}
+  .idea .mark{width:8px;height:8px;border-radius:50%;background:var(--sage);margin-top:6px;}
+  .idea h3{font-size:16px;font-weight:600;margin-bottom:6px;}
+  .idea p{font-size:14px;color:var(--ink-soft);}
+
+  footer{padding:30px 32px;display:flex;justify-content:space-between;font-size:12px;color:var(--ink-faint);border-top:1px solid var(--line);}
+
+  @media(max-width:640px){
+    .cmd-grid{grid-template-columns:1fr;}
+    header.hero h1{font-size:28px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="dot-mark"></div>
+  <div class="label">тихо · справочник команд</div>
+</div>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="kicker">Палитра команд</div>
+    <h1>Всё, что обычно спрятано в <em>трёх уровнях меню</em> — теперь за одной клавишей.</h1>
+    <p>Команды сгруппированы по тому, какую проблему они решают: работа с сообщениями, темп переписки, групповые чаты, организация и быстрые действия без открытия чата.</p>
+  </header>
+
+  <section class="category">
+    <h2>Работа с сообщениями</h2>
+    <p class="desc">Найти, закрепить, отложить или переслать — не отвлекаясь от разговора.</p>
+    <div class="cmd-grid">
+      <div class="cmd"><code>/найти</code><p>Поиск по всей переписке или в конкретном чате.</p></div>
+      <div class="cmd"><code>/закрепить</code><p>Закрепить последнее или выбранное сообщение.</p></div>
+      <div class="cmd"><code>/напомнить через 2 часа</code><p>Вернуть сообщение наверх позже, не держа его в голове.</p></div>
+      <div class="cmd"><code>/переслать</code><p>Отправить сообщение в другой чат без копирования вручную.</p></div>
+    </div>
+  </section>
+
+  <section class="category">
+    <h2>Управление темпом</h2>
+    <p class="desc">Решение о срочности остаётся за человеком, а не за интерфейсом.</p>
+    <div class="cmd-grid">
+      <div class="cmd"><code>/срочно</code><p>Пометить своё сообщение как важное перед отправкой.</p></div>
+      <div class="cmd"><code>/не срочно</code><p>Явно снять ожидание немедленного ответа.</p></div>
+      <div class="cmd"><code>/заглушить на день</code><p>Временно скрыть чат из списка активных.</p></div>
+      <div class="cmd"><code>/тихие часы</code><p>Включить период «не беспокоить» для чата или всех разговоров.</p></div>
+      <div class="cmd"><code>/закрыть день</code><p>Пометить входящие обработанными на сегодня.</p></div>
+    </div>
+  </section>
+
+  <section class="category">
+    <h2>Групповые чаты</h2>
+    <p class="desc">Меньше шума в потоке, больше смысла на выходе.</p>
+    <div class="cmd-grid">
+      <div class="cmd"><code>/выжимка</code><p>Краткое саммари пропущенных сообщений по темам.</p></div>
+      <div class="cmd"><code>/медленный режим</code><p>Ограничить частоту сообщений в группе.</p></div>
+      <div class="cmd"><code>/кто читал</code><p>Приватный список вместо публичных галочек прочтения.</p></div>
+    </div>
+  </section>
+
+  <section class="category">
+    <h2>Организация</h2>
+    <p class="desc">Переписка — это архив, которым можно управлять.</p>
+    <div class="cmd-grid">
+      <div class="cmd"><code>/архивировать</code><p>Убрать чат из списка, сохранив историю.</p></div>
+      <div class="cmd"><code>/переименовать</code><p>Изменить имя чата или группы.</p></div>
+      <div class="cmd"><code>/экспорт</code><p>Выгрузить историю переписки себе.</p></div>
+    </div>
+  </section>
+
+  <section class="category">
+    <h2>Быстрые действия</h2>
+    <p class="desc">Не открывая чат — прямо из палитры.</p>
+    <div class="cmd-grid">
+      <div class="cmd"><code>/статус ответит позже</code><p>Вручную выставить статус, не завися от автоопределения.</p></div>
+      <div class="cmd"><code>/отправить [имя]: текст</code><p>Написать в другой чат, не переключаясь между окнами.</p></div>
+    </div>
+  </section>
+
+  <section class="ideas">
+    <div class="kicker">Ещё для чата</div>
+    <h2>Новые направления, которые пока не в палитре</h2>
+
+    <div class="idea">
+      <div class="mark"></div>
+      <div><h3>Отложенная отправка по умолчанию</h3><p>Сообщение уходит не сразу, а через несколько секунд — можно поймать и отменить импульсивную фразу до того, как её увидит собеседник.</p></div>
+    </div>
+    <div class="idea">
+      <div class="mark" style="background:var(--clay)"></div>
+      <div><h3>Контекст вместо «в сети»</h3><p>Статус описывает, чем человек занят («за рулём», «в дороге», «в фокусе»), а не просто факт присутствия — так проще понять, стоит ли ждать быстрый ответ.</p></div>
+    </div>
+    <div class="idea">
+      <div class="mark"></div>
+      <div><h3>Комната тишины</h3><p>Общий фокус-режим на всё приложение: на выбранное время исчезают все сигналы, а после — спокойная сводка того, что произошло.</p></div>
+    </div>
+    <div class="idea">
+      <div class="mark" style="background:var(--clay)"></div>
+      <div><h3>Отложить на потом</h3><p>Жест, похожий на «архивировать письмо» — сообщение уходит в отдельный тихий список «прочитать позже», не создавая долга ответить сейчас же.</p></div>
+    </div>
+    <div class="idea">
+      <div class="mark"></div>
+      <div><h3>Черновик вместе</h3><p>В групповом чате можно составить одно сообщение сообща, прежде чем оно уйдёт всем — полезно для решений, где формулировка важна.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© тихо, 2026</span>
+    <span>справочник команд</span>
+  </footer>
+</div>
+
+</body>
+</html>
