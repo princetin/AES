@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Тихо — команды и идеи</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Tiho — commands & ideas</title>
 <style>
   :root{
     --ink:#161615;
@@ -21,7 +19,7 @@
     --clay-ink:#8a3d31;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  body{background:var(--paper);color:var(--ink);font-family:'Garamond', serif;line-height:1.6;}
   .wrap{max-width:920px;margin:0 auto;padding:0 32px;}
 
   .topbar{
@@ -33,12 +31,12 @@
 
   header.hero{padding:64px 0 40px;}
   header.hero .kicker{font-size:12px;letter-spacing:0.14em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:16px;}
-  header.hero h1{font-family:'Newsreader',serif;font-weight:400;font-size:38px;line-height:1.25;max-width:640px;}
+  header.hero h1{font-family:'Garamond', serif;font-weight:400;font-size:38px;line-height:1.25;max-width:640px;}
   header.hero h1 em{font-style:italic;color:var(--clay-ink);}
   header.hero p{color:var(--ink-soft);font-size:15px;margin-top:16px;max-width:520px;}
 
   section.category{padding:36px 0;border-top:1px solid var(--line);}
-  section.category h2{font-family:'Newsreader',serif;font-weight:500;font-size:21px;margin-bottom:6px;}
+  section.category h2{font-family:'Garamond', serif;font-weight:500;font-size:21px;margin-bottom:6px;}
   section.category .desc{font-size:13.5px;color:var(--ink-faint);margin-bottom:22px;}
 
   .cmd-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -54,7 +52,7 @@
 
   section.ideas{padding:50px 0;border-top:1px solid var(--line);}
   section.ideas .kicker{font-size:12px;letter-spacing:0.14em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:16px;}
-  section.ideas h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin-bottom:30px;max-width:600px;}
+  section.ideas h2{font-family:'Garamond', serif;font-weight:400;font-size:28px;margin-bottom:30px;max-width:600px;}
 
   .idea{
     display:grid;grid-template-columns:28px 1fr;gap:16px;padding:20px 0;border-top:1px solid var(--line);
@@ -76,97 +74,97 @@
 
 <div class="topbar">
   <div class="dot-mark"></div>
-  <div class="label">тихо · справочник команд</div>
+  <div class="label">tiho · command reference</div>
 </div>
 
 <div class="wrap">
   <header class="hero">
-    <div class="kicker">Палитра команд</div>
-    <h1>Всё, что обычно спрятано в <em>трёх уровнях меню</em> — теперь за одной клавишей.</h1>
-    <p>Команды сгруппированы по тому, какую проблему они решают: работа с сообщениями, темп переписки, групповые чаты, организация и быстрые действия без открытия чата.</p>
+    <div class="kicker">Command palette</div>
+    <h1>Everything usually hidden in <em>three levels of menus</em> — now behind a single key.</h1>
+    <p>Commands are grouped by the problem they solve: working with messages, conversation pace, group chats, organization, and quick actions without opening a chat.</p>
   </header>
 
   <section class="category">
-    <h2>Работа с сообщениями</h2>
-    <p class="desc">Найти, закрепить, отложить или переслать — не отвлекаясь от разговора.</p>
+    <h2>Working with messages</h2>
+    <p class="desc">Find, pin, defer, or forward — without losing focus on the conversation.</p>
     <div class="cmd-grid">
-      <div class="cmd"><code>/найти</code><p>Поиск по всей переписке или в конкретном чате.</p></div>
-      <div class="cmd"><code>/закрепить</code><p>Закрепить последнее или выбранное сообщение.</p></div>
-      <div class="cmd"><code>/напомнить через 2 часа</code><p>Вернуть сообщение наверх позже, не держа его в голове.</p></div>
-      <div class="cmd"><code>/переслать</code><p>Отправить сообщение в другой чат без копирования вручную.</p></div>
+      <div class="cmd"><code>/find</code><p>Search across all conversations or within a specific chat.</p></div>
+      <div class="cmd"><code>/pin</code><p>Pin the last or a selected message.</p></div>
+      <div class="cmd"><code>/remind in 2 hours</code><p>Bring a message back to the top later, without keeping it in your head.</p></div>
+      <div class="cmd"><code>/forward</code><p>Send a message to another chat without manual copying.</p></div>
     </div>
   </section>
 
   <section class="category">
-    <h2>Управление темпом</h2>
-    <p class="desc">Решение о срочности остаётся за человеком, а не за интерфейсом.</p>
+    <h2>Pace management</h2>
+    <p class="desc">The decision about urgency stays with the person, not the interface.</p>
     <div class="cmd-grid">
-      <div class="cmd"><code>/срочно</code><p>Пометить своё сообщение как важное перед отправкой.</p></div>
-      <div class="cmd"><code>/не срочно</code><p>Явно снять ожидание немедленного ответа.</p></div>
-      <div class="cmd"><code>/заглушить на день</code><p>Временно скрыть чат из списка активных.</p></div>
-      <div class="cmd"><code>/тихие часы</code><p>Включить период «не беспокоить» для чата или всех разговоров.</p></div>
-      <div class="cmd"><code>/закрыть день</code><p>Пометить входящие обработанными на сегодня.</p></div>
+      <div class="cmd"><code>/urgent</code><p>Mark your message as important before sending.</p></div>
+      <div class="cmd"><code>/not urgent</code><p>Explicitly remove the expectation of an immediate reply.</p></div>
+      <div class="cmd"><code>/silence for a day</code><p>Temporarily hide a chat from the active list.</p></div>
+      <div class="cmd"><code>/quiet hours</code><p>Turn on "do not disturb" for a chat or all conversations.</p></div>
+      <div class="cmd"><code>/close day</code><p>Mark incoming messages as processed for today.</p></div>
     </div>
   </section>
 
   <section class="category">
-    <h2>Групповые чаты</h2>
-    <p class="desc">Меньше шума в потоке, больше смысла на выходе.</p>
+    <h2>Group chats</h2>
+    <p class="desc">Less noise in the stream, more meaning on the other side.</p>
     <div class="cmd-grid">
-      <div class="cmd"><code>/выжимка</code><p>Краткое саммари пропущенных сообщений по темам.</p></div>
-      <div class="cmd"><code>/медленный режим</code><p>Ограничить частоту сообщений в группе.</p></div>
-      <div class="cmd"><code>/кто читал</code><p>Приватный список вместо публичных галочек прочтения.</p></div>
+      <div class="cmd"><code>/digest</code><p>A brief summary of missed messages by topic.</p></div>
+      <div class="cmd"><code>/slow mode</code><p>Limit the frequency of messages in a group.</p></div>
+      <div class="cmd"><code>/who read</code><p>A private list instead of public read receipts.</p></div>
     </div>
   </section>
 
   <section class="category">
-    <h2>Организация</h2>
-    <p class="desc">Переписка — это архив, которым можно управлять.</p>
+    <h2>Organization</h2>
+    <p class="desc">Conversations are an archive you can manage.</p>
     <div class="cmd-grid">
-      <div class="cmd"><code>/архивировать</code><p>Убрать чат из списка, сохранив историю.</p></div>
-      <div class="cmd"><code>/переименовать</code><p>Изменить имя чата или группы.</p></div>
-      <div class="cmd"><code>/экспорт</code><p>Выгрузить историю переписки себе.</p></div>
+      <div class="cmd"><code>/archive</code><p>Remove a chat from the list while preserving history.</p></div>
+      <div class="cmd"><code>/rename</code><p>Change a chat or group name.</p></div>
+      <div class="cmd"><code>/export</code><p>Export your conversation history.</p></div>
     </div>
   </section>
 
   <section class="category">
-    <h2>Быстрые действия</h2>
-    <p class="desc">Не открывая чат — прямо из палитры.</p>
+    <h2>Quick actions</h2>
+    <p class="desc">Without opening a chat — straight from the palette.</p>
     <div class="cmd-grid">
-      <div class="cmd"><code>/статус ответит позже</code><p>Вручную выставить статус, не завися от автоопределения.</p></div>
-      <div class="cmd"><code>/отправить [имя]: текст</code><p>Написать в другой чат, не переключаясь между окнами.</p></div>
+      <div class="cmd"><code>/status will reply later</code><p>Manually set your status, independent of auto-detection.</p></div>
+      <div class="cmd"><code>/send [name]: text</code><p>Write to another chat without switching windows.</p></div>
     </div>
   </section>
 
   <section class="ideas">
-    <div class="kicker">Ещё для чата</div>
-    <h2>Новые направления, которые пока не в палитре</h2>
+    <div class="kicker">More for the chat</div>
+    <h2>New directions not yet in the palette</h2>
 
     <div class="idea">
       <div class="mark"></div>
-      <div><h3>Отложенная отправка по умолчанию</h3><p>Сообщение уходит не сразу, а через несколько секунд — можно поймать и отменить импульсивную фразу до того, как её увидит собеседник.</p></div>
+      <div><h3>Delayed sending by default</h3><p>A message doesn't go out immediately, but after a few seconds — you can catch and cancel an impulsive phrase before the other person sees it.</p></div>
     </div>
     <div class="idea">
       <div class="mark" style="background:var(--clay)"></div>
-      <div><h3>Контекст вместо «в сети»</h3><p>Статус описывает, чем человек занят («за рулём», «в дороге», «в фокусе»), а не просто факт присутствия — так проще понять, стоит ли ждать быстрый ответ.</p></div>
+      <div><h3>Context instead of "online"</h3><p>The status describes what the person is doing ("driving", "on the go", "in focus"), not just the fact of presence — so you can better judge whether to expect a quick reply.</p></div>
     </div>
     <div class="idea">
       <div class="mark"></div>
-      <div><h3>Комната тишины</h3><p>Общий фокус-режим на всё приложение: на выбранное время исчезают все сигналы, а после — спокойная сводка того, что произошло.</p></div>
+      <div><h3>Silence room</h3><p>A shared focus mode for the whole app: for a chosen time, all signals disappear, and afterward — a calm summary of what happened.</p></div>
     </div>
     <div class="idea">
       <div class="mark" style="background:var(--clay)"></div>
-      <div><h3>Отложить на потом</h3><p>Жест, похожий на «архивировать письмо» — сообщение уходит в отдельный тихий список «прочитать позже», не создавая долга ответить сейчас же.</p></div>
+      <div><h3>Defer for later</h3><p>A gesture similar to "archive email" — the message moves to a separate quiet "read later" list, without creating the obligation to reply right now.</p></div>
     </div>
     <div class="idea">
       <div class="mark"></div>
-      <div><h3>Черновик вместе</h3><p>В групповом чате можно составить одно сообщение сообща, прежде чем оно уйдёт всем — полезно для решений, где формулировка важна.</p></div>
+      <div><h3>Draft together</h3><p>In a group chat, you can collectively compose a single message before it goes out to everyone — useful for decisions where wording matters.</p></div>
     </div>
   </section>
 
   <footer>
-    <span>© тихо, 2026</span>
-    <span>справочник команд</span>
+    <span>© tiho, 2026</span>
+    <span>command reference</span>
   </footer>
 </div>
 
