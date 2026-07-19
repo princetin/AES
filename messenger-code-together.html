@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiet — collaborative code next to chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c1c1a;
+    --ink-soft:#6b6a63;
+    --ink-faint:#a4a299;
+    --paper:#faf9f6;
+    --panel:#ffffff;
+    --line:#e7e4dc;
+    --sage:#4f6f63;
+    --sage-tint:#e7efec;
+    --clay:#c96a5c;
+    --clay-tint:#f8e9e6;
+    --clay-ink:#8a3d31;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--paper);font-family:'Inter',sans-serif;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px 16px;
+  }
+
+  .app{
+    width:420px;background:var(--panel);border:1px solid var(--line);border-radius:22px;
+    box-shadow:0 30px 70px -35px rgba(28,28,26,0.22);overflow:hidden;
+    height:620px;transition:width 0.55s cubic-bezier(.25,.8,.3,1);
+  }
+  .app.split{width:840px;}
+
+  .app-body{display:flex;height:100%;}
+
+  /* ---- chat panel ---- */
+  .chat-panel{
+    width:420px;flex-shrink:0;display:flex;flex-direction:column;
+    transition:width 0.55s cubic-bezier(.25,.8,.3,1);
+  }
+  .app.split .chat-panel{width:360px;}
+
+  .chat-header{
+    padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;
+  }
+  .avatar{
+    width:34px;height:34px;border-radius:50%;background:var(--sage-tint);color:var(--sage);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;
+  }
+  .chat-header h2{font-family:'Newsreader',serif;font-weight:500;font-size:15px;}
+  .chat-header p{font-size:11.5px;color:var(--ink-faint);margin-top:1px;}
+
+  .messages{flex:1;padding:18px 20px;display:flex;flex-direction:column;gap:10px;overflow:hidden;}
+  .msg{max-width:80%;padding:9px 13px;border-radius:15px;font-size:13px;line-height:1.45;}
+  .msg.in{align-self:flex-start;background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:4px;}
+  .msg.out{align-self:flex-end;background:var(--sage-tint);color:var(--sage);border-bottom-right-radius:4px;}
+  .msg.system{
+    align-self:center;background:var(--clay-tint);color:var(--clay-ink);font-size:11.5px;
+    border-radius:20px;padding:6px 14px;
+  }
+
+  .toolbar{display:flex;align-items:center;gap:6px;padding:0 20px 8px;}
+  .tool-btn{
+    width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--paper);
+    display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-size:13px;
+    transition:background 0.2s ease, color 0.2s ease, border-color 0.2s ease;cursor:pointer;
+  }
+  .tool-btn svg{width:15px;height:15px;stroke:currentColor;}
+  .tool-btn.active{background:var(--sage-tint);color:var(--sage);border-color:var(--sage-tint);}
+  .tool-hint{font-size:11px;color:var(--ink-faint);margin-left:auto;}
+
+  .composer{padding:0 20px 18px;display:flex;align-items:center;gap:10px;}
+  .composer-box{
+    flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 13px;
+    font-size:13px;color:var(--ink-faint);background:var(--paper);min-height:20px;
+  }
+  .send{
+    width:34px;height:34px;border-radius:10px;background:var(--ink);color:var(--paper);
+    border:none;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;
+  }
+
+  /* ---- code panel ---- */
+  .code-panel{
+    width:0;opacity:0;overflow:hidden;border-left:1px solid var(--line);
+    display:flex;flex-direction:column;background:var(--paper);
+    transition:width 0.55s cubic-bezier(.25,.8,.3,1), opacity 0.4s ease 0.1s;
+  }
+  .app.split .code-panel{width:480px;opacity:1;}
+
+  .code-header{
+    padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;
+    flex-shrink:0;white-space:nowrap;
+  }
+  .code-header .title{font-size:13px;font-weight:600;}
+  .code-header .lang{
+    font-size:10.5px;color:var(--ink-faint);border:1px solid var(--line);border-radius:6px;
+    padding:2px 7px;font-family:'JetBrains Mono',monospace;
+  }
+  .presence{display:flex;align-items:center;gap:6px;margin-left:auto;}
+  .chip{
+    display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-soft);
+    border:1px solid var(--line);border-radius:20px;padding:3px 9px 3px 6px;
+  }
+  .chip i{width:7px;height:7px;border-radius:50%;display:inline-block;}
+
+  .code-body{
+    flex:1;padding:16px 18px;overflow:hidden;font-family:'JetBrains Mono',monospace;font-size:12.8px;
+    line-height:1.75;
+  }
+  .code-line{display:flex;gap:14px;white-space:pre;}
+  .code-line .num{color:var(--ink-faint);width:16px;text-align:right;flex-shrink:0;user-select:none;}
+  .code-line .text{color:var(--ink);}
+  .code-line .text .kw{color:var(--sage-ink,var(--sage));font-weight:600;}
+  .code-line .text .str{color:var(--clay-ink);}
+
+  .caret{
+    display:inline-block;width:2px;height:13px;margin-left:1px;vertical-align:middle;
+    animation:blink 0.85s steps(1) infinite;
+  }
+  .caret.me{background:var(--sage);}
+  .caret.alina{background:var(--clay);}
+  @keyframes blink{50%{opacity:0;}}
+
+  .caption{text-align:center;font-size:12px;color:var(--ink-faint);margin-top:18px;max-width:840px;}
+</style>
+</head>
+<body>
+
+<div>
+  <div class="app" id="app">
+    <div class="app-body">
+
+      <div class="chat-panel">
+        <div class="chat-header">
+          <div class="avatar">AL</div>
+          <div>
+            <h2>Alina</h2>
+            <p>will reply later</p>
+          </div>
+        </div>
+
+        <div class="messages">
+          <div class="msg in">Remember that matrix multiplication problem?</div>
+          <div class="msg out">Yeah, let's just write the function right here in the chat</div>
+          <div class="msg system" id="systemMsg" style="display:none;">Collaborative code opened</div>
+        </div>
+
+        <div class="toolbar">
+          <div class="tool-btn" id="attachBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+            </svg>
+          </div>
+          <div class="tool-btn" id="micBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" x2="12" y1="19" y2="22"/>
+            </svg>
+          </div>
+          <div class="tool-btn" id="codeBtn" title="Collaborative code">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
+            </svg>
+          </div>
+          <span class="tool-hint" id="toolHint">Code — write together in real time</span>
+        </div>
+
+        <div class="composer">
+          <div class="composer-box">Message…</div>
+          <button class="send">↑</button>
+        </div>
+      </div>
+
+      <div class="code-panel" id="codePanel">
+        <div class="code-header">
+          <span class="title">multiply.py</span>
+          <span class="lang">python</span>
+          <div class="presence">
+            <span class="chip"><i style="background:var(--sage)"></i>You</span>
+            <span class="chip"><i style="background:var(--clay)"></i>Alina</span>
+          </div>
+        </div>
+        <div class="code-body" id="codeBody"></div>
+      </div>
+
+    </div>
+  </div>
+  <p class="caption">Pressing «Code» smoothly expands the panel next to the chat. Green cursor — you, clay cursor — Alina: both type simultaneously, each in their own part of the function.</p>
+</div>
+
+<script>
+  const app = document.getElementById('app');
+  const codeBody = document.getElementById('codeBody');
+  const codeBtn = document.getElementById('codeBtn');
+  const systemMsg = document.getElementById('systemMsg');
+  const toolHint = document.getElementById('toolHint');
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  // lines with plain text (for typing) and a highlighted version (swapped in once done)
+  const lines = [
+    { owner:'me',    plain:'def multiply(A, B):',
+      html:'<span class="kw">def</span> multiply(A, B):' },
+    { owner:'me',    plain:'    """Multiply two 2x2 matrices."""',
+      html:'    <span class="str">"""Multiply two 2x2 matrices."""</span>' },
+    { owner:'me',    plain:'    return [',
+      html:'    <span class="kw">return</span> [' },
+    { owner:'alina', plain:'        [A[0][0]*B[0][0] + A[0][1]*B[1][0], A[0][0]*B[0][1] + A[0][1]*B[1][1]],',
+      html:'        [A[0][0]*B[0][0] + A[0][1]*B[1][0], A[0][0]*B[0][1] + A[0][1]*B[1][1]],' },
+    { owner:'alina', plain:'        [A[1][0]*B[0][0] + A[1][1]*B[1][0], A[1][0]*B[0][1] + A[1][1]*B[1][1]],',
+      html:'        [A[1][0]*B[0][0] + A[1][1]*B[1][0], A[1][0]*B[0][1] + A[1][1]*B[1][1]],' },
+    { owner:'me',    plain:'    ]',
+      html:'    ]' },
+  ];
+
+  function buildSkeleton(){
+    codeBody.innerHTML = lines.map((l, i) =>
+      '<div class="code-line" data-idx="' + i + '">' +
+        '<span class="num">' + (i + 1) + '</span>' +
+        '<span class="text" id="line-' + i + '"></span>' +
+      '</div>'
+    ).join('');
+  }
+
+  async function typeLine(idx, charDelay){
+    const el = document.getElementById('line-' + idx);
+    const { plain, html, owner } = lines[idx];
+    let current = '';
+    for (const ch of plain){
+      current += ch;
+      el.innerHTML = escapeHtml(current) + '<span class="caret ' + owner + '"></span>';
+      await sleep(charDelay);
+    }
+    el.innerHTML = html; // swap in the highlighted version, caret removed
+  }
+
+  function escapeHtml(str){
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  let running = false;
+
+  async function runDemo(){
+    if (running) return;
+    running = true;
+
+    // reset state
+    app.classList.remove('split');
+    systemMsg.style.display = 'none';
+    buildSkeleton();
+    codeBtn.classList.remove('active');
+    toolHint.textContent = 'Code — write together in real time';
+    await sleep(1400);
+
+    // open split view
+    codeBtn.classList.add('active');
+    app.classList.add('split');
+    toolHint.textContent = 'Collaborative code opened';
+    await sleep(650);
+    systemMsg.style.display = 'block';
+    await sleep(500);
+
+    // "me" types the scaffold (lines 0–2)
+    await typeLine(0, 34);
+    await sleep(120);
+    await typeLine(1, 22);
+    await sleep(120);
+
+    // start line 2 (me) and, partway through, Alina starts lines 3–4 concurrently
+    const meTail = typeLine(2, 40);
+    await sleep(260);
+    const alinaBody = (async () => {
+      await typeLine(3, 16);
+      await sleep(90);
+      await typeLine(4, 16);
+    })();
+    await Promise.all([meTail, alinaBody]);
+
+    await sleep(300);
+    // "me" closes the block
+    await typeLine(5, 60);
+
+    await sleep(2600);
+
+    // close split view
+    app.classList.remove('split');
+    codeBtn.classList.remove('active');
+    systemMsg.style.display = 'none';
+    toolHint.textContent = 'Code — write together in real time';
+    await sleep(2200);
+
+    running = false;
+    runDemo();
+  }
+
+  codeBtn.addEventListener('click', runDemo);
+  window.addEventListener('load', () => setTimeout(runDemo, 700));
+</script>
+
+</body>
+</html>
