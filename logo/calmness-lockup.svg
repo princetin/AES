@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 46" font-family="Newsreader, 'Iowan Old Style', Georgia, serif">
+  <circle cx="23" cy="23" r="21" fill="none" stroke="#4f6f63" stroke-width="1" opacity="0.18"/>
+  <circle cx="23" cy="23" r="14" fill="none" stroke="#4f6f63" stroke-width="1.2" opacity="0.35"/>
+  <circle cx="23" cy="23" r="6.5" fill="#4f6f63"/>
+  <text x="56" y="31" font-size="30" font-style="italic" font-weight="500" fill="#161615" letter-spacing="-0.3">calmness</text>
+</svg>
