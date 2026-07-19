@@ -66,6 +66,15 @@ def replacement_S_box(byte):
 print(hex(replacement_S_box(0x06)))
 
 
+INV_SBOX = [0] * 256
+for _i, _v in enumerate(SBOX):
+    INV_SBOX[_v] = _i
+
+
+def replacement_inv_S_box(byte):
+    return INV_SBOX[byte]
+
+
 def mul2(x):
     result = (x << 1) & 0xFF
     if (x & 0x80) == 0x80:
@@ -82,6 +91,38 @@ def mix_column(a0, a1, a2, a3):
     b1 = a0 ^ mul2(a1) ^ mul3(a2) ^ a3
     b2 = a0 ^ a1 ^ mul2(a2) ^ mul3(a3)
     b3 = mul3(a0) ^ a1 ^ a2 ^ mul2(a3)
+    return b0, b1, b2, b3
+
+
+def mul4(x):
+    return mul2(mul2(x))
+
+
+def mul8(x):
+    return mul2(mul4(x))
+
+
+def mul9(x):
+    return mul8(x) ^ x
+
+
+def mul11(x):
+    return mul8(x) ^ mul2(x) ^ x
+
+
+def mul13(x):
+    return mul8(x) ^ mul4(x) ^ x
+
+
+def mul14(x):
+    return mul8(x) ^ mul4(x) ^ mul2(x)
+
+
+def inv_mix_column(a0, a1, a2, a3):
+    b0 = mul14(a0) ^ mul11(a1) ^ mul13(a2) ^ mul9(a3)
+    b1 = mul9(a0) ^ mul14(a1) ^ mul11(a2) ^ mul13(a3)
+    b2 = mul13(a0) ^ mul9(a1) ^ mul14(a2) ^ mul11(a3)
+    b3 = mul11(a0) ^ mul13(a1) ^ mul9(a2) ^ mul14(a3)
     return b0, b1, b2, b3
 
 
@@ -134,4 +175,21 @@ def mix_columns(matrix):
 
     return new_matrix
 
-RFC_3526 = 32317006071311007300338913926423828248817941241140239112842009751400741706634354222619689417363569347117901737909704191754605873209195028853758986185622153212175412514901774520270235796078236248884246189477587641105928646099411723245426622522193230540919037680524235519125679715870117001058055877651038861847280257976054903569732561526167081339361799541336476559160368317896729073178384589680639671900977202194168647225871031411336429319536193471636533209717077448227988588565369208645296636077250268955505928362751121174096972998068410554359584866583291642136218231078990999448652468262416972035911852507045361090559
+
+def inv_mix_columns(matrix):
+    new_matrix = [[0] * 4 for _ in range(4)]
+
+    for j in range(4):
+        a0 = matrix[0][j]
+        a1 = matrix[1][j]
+        a2 = matrix[2][j]
+        a3 = matrix[3][j]
+
+        b0, b1, b2, b3 = inv_mix_column(a0, a1, a2, a3)
+
+        new_matrix[0][j] = b0
+        new_matrix[1][j] = b1
+        new_matrix[2][j] = b2
+        new_matrix[3][j] = b3
+
+    return new_matrix
