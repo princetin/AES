@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiet — command palette demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c1c1a;
+    --ink-soft:#6b6a63;
+    --ink-faint:#a4a299;
+    --paper:#faf9f6;
+    --panel:#ffffff;
+    --line:#e7e4dc;
+    --sage:#4f6f63;
+    --sage-tint:#e7efec;
+    --clay:#c96a5c;
+    --clay-tint:#f8e9e6;
+    --clay-ink:#8a3d31;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--paper);font-family:'Inter',sans-serif;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px 16px;
+  }
+  .app{
+    width:420px;background:var(--panel);border:1px solid var(--line);border-radius:22px;
+    box-shadow:0 30px 70px -35px rgba(28,28,26,0.22);overflow:hidden;
+    display:flex;flex-direction:column;height:550px;position:relative;
+  }
+  .chat-header{
+    padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;
+  }
+  .avatar{
+    width:34px;height:34px;border-radius:50%;background:var(--sage-tint);color:var(--sage);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;
+  }
+  .chat-header h2{font-family:'Newsreader',serif;font-weight:500;font-size:15.5px;}
+  .chat-header p{font-size:11.5px;color:var(--ink-faint);margin-top:1px;}
+
+  .messages{flex:1;padding:20px 22px;display:flex;flex-direction:column;gap:10px;overflow:hidden;}
+  .msg{max-width:74%;padding:9px 13px;border-radius:15px;font-size:13.5px;line-height:1.45;}
+  .msg.in{align-self:flex-start;background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:4px;}
+  .msg.out{align-self:flex-end;background:var(--sage-tint);color:var(--sage);border-bottom-right-radius:4px;}
+  .msg.system{
+    align-self:center;background:var(--clay-tint);color:var(--clay-ink);font-size:12px;
+    border-radius:20px;padding:6px 14px;opacity:0;transform:translateY(4px);
+    transition:opacity 0.4s ease, transform 0.4s ease;
+  }
+  .msg.system.show{opacity:1;transform:translateY(0);}
+
+  .palette{
+    position:absolute;left:22px;right:22px;bottom:74px;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 16px 40px -20px rgba(28,28,26,0.28);
+    padding:8px;opacity:0;transform:translateY(8px) scale(0.98);
+    transition:opacity 0.25s ease, transform 0.25s ease;pointer-events:none;
+    max-height:260px;overflow:hidden;
+  }
+  .palette.show{opacity:1;transform:translateY(0) scale(1);}
+  .palette-item{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:9px 12px;border-radius:9px;font-size:13px;
+  }
+  .palette-item.active{background:var(--sage-tint);}
+  .palette-item code{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--clay-ink);}
+  .palette-item span{color:var(--ink-faint);font-size:11px;white-space:nowrap;}
+
+  .composer{
+    padding:14px 22px 20px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;
+  }
+  .composer-box{
+    flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 13px;
+    font-size:13.5px;font-family:'Inter';color:var(--ink);background:var(--paper);
+    min-height:20px;display:flex;align-items:center;
+  }
+  .composer-box .cmd-part{color:var(--clay-ink);font-family:'JetBrains Mono',monospace;font-size:13px;}
+  .caret{
+    display:inline-block;width:1.5px;height:14px;background:var(--ink);margin-left:2px;
+    animation:blink 0.9s steps(1) infinite;vertical-align:middle;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  .send{
+    width:34px;height:34px;border-radius:10px;background:var(--ink);color:var(--paper);
+    border:none;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;
+  }
+
+  .caption{
+    text-align:center;font-size:12px;color:var(--ink-faint);margin-top:18px;max-width:420px;
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <div class="app">
+    <div class="chat-header">
+      <div class="avatar">AL</div>
+      <div>
+        <h2>Alina</h2>
+        <p>will reply later</p>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="msg in">Can you send the lecture notes?</div>
+      <div class="msg out">On it, give me a minute</div>
+    </div>
+
+    <div class="palette" id="palette"></div>
+
+    <div class="composer">
+      <div class="composer-box" id="composerBox"><span class="caret"></span></div>
+      <button class="send">↑</button>
+    </div>
+  </div>
+  <p class="caption">Typing "/" opens the full command list. Typing more narrows it down — picking a command runs its action.</p>
+</div>
+
+<script>
+  const composerBox = document.getElementById('composerBox');
+  const paletteEl = document.getElementById('palette');
+  const messagesEl = document.getElementById('messages');
+
+  const commands = [
+    { cmd: '/find', desc: 'search messages' },
+    { cmd: '/pin', desc: 'pin this message' },
+    { cmd: '/remind in 2 hours', desc: 'bring it back later', result: 'Reminder set for 2 hours' },
+    { cmd: '/forward', desc: 'send to another chat' },
+    { cmd: '/urgent', desc: 'mark as important' },
+    { cmd: '/mute for today', desc: 'hide from active chats', result: 'Chat muted for today' },
+    { cmd: '/quiet hours', desc: 'pause notifications', result: 'Quiet hours enabled' },
+    { cmd: '/digest', desc: 'summarize missed messages', result: 'Digest ready — 3 topics' },
+    { cmd: '/archive', desc: 'archive this chat' },
+    { cmd: '/export', desc: 'download chat history' },
+  ];
+
+  // sequence of commands the demo actually runs, one per loop
+  const demoSequence = [
+    { cmd: '/remind in 2 hours', result: 'Reminder set for 2 hours' },
+    { cmd: '/quiet hours', result: 'Quiet hours enabled' },
+    { cmd: '/mute for today', result: 'Chat muted for today' },
+    { cmd: '/digest', result: 'Digest ready — 3 topics' },
+  ];
+  let seqIndex = 0;
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  function renderComposer(text, withCaret){
+    const caret = withCaret ? '<span class="caret"></span>' : '';
+    if(text.startsWith('/')){
+      composerBox.innerHTML = '<span class="cmd-part">' + text + '</span>' + caret;
+    } else {
+      composerBox.innerHTML = text + caret;
+    }
+  }
+
+  function renderPalette(query){
+    const list = query === '/' ? commands : commands.filter(c => c.cmd.startsWith(query));
+    paletteEl.innerHTML = list.map((c, i) =>
+      '<div class="palette-item' + (i===0 ? ' active' : '') + '"><code>' + c.cmd + '</code><span>' + c.desc + '</span></div>'
+    ).join('');
+  }
+
+  async function typeText(fullText, charDelay){
+    let current = '';
+    for(const ch of fullText){
+      current += ch;
+      renderComposer(current, true);
+      renderPalette(current);
+      await sleep(charDelay);
+    }
+  }
+
+  function addSystemMessage(text){
+    const div = document.createElement('div');
+    div.className = 'msg system';
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    requestAnimationFrame(() => div.classList.add('show'));
+  }
+
+  async function runDemo(){
+    const target = demoSequence[seqIndex % demoSequence.length];
+    seqIndex++;
+
+    // reset
+    renderComposer('', true);
+    paletteEl.classList.remove('show');
+    paletteEl.innerHTML = '';
+    const existingSystem = messagesEl.querySelector('.msg.system');
+    if(existingSystem) existingSystem.remove();
+
+    await sleep(1200);
+
+    // open palette with the full list
+    await typeText('/', 90);
+    paletteEl.classList.add('show');
+    await sleep(500);
+
+    // type the rest of the target command, filtering the list down
+    const rest = target.cmd.slice(1);
+    await typeText('/' + rest, 42);
+    await sleep(700);
+
+    // highlight the single matching command as selected
+    document.querySelectorAll('.palette-item').forEach((el, i) => {
+      el.classList.toggle('active', i === 0);
+    });
+    await sleep(450);
+
+    // clear composer, close palette, run its action
+    paletteEl.classList.remove('show');
+    renderComposer('', true);
+    await sleep(300);
+
+    addSystemMessage(target.result);
+    await sleep(3000);
+
+    runDemo();
+  }
+
+  runDemo();
+</script>
+
+</body>
+</html>

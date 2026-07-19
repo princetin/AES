@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tiho — commands & ideas</title>
+<title>calmness — commands & ideas</title>
 <style>
   :root{
     --ink:#161615;
@@ -18,6 +18,17 @@
     --clay-tint:#f8e9e6;
     --clay-ink:#8a3d31;
   }
+
+.animations {
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  width: 80%;
+  height: 700px;
+  transform: translate(500px, -200px);
+  border: none;
+}
+
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--paper);color:var(--ink);font-family:'Garamond', serif;line-height:1.6;}
   .wrap{max-width:920px;margin:0 auto;padding:0 32px;}
@@ -74,7 +85,9 @@
 
 <div class="topbar">
   <div class="dot-mark"></div>
-  <div class="label">tiho · command reference</div>
+  <div class="label">
+    <a href="messenger-landing.html" style="text-decoration: none; color: inherit;">calmness</a> · command reference
+  </div>
 </div>
 
 <div class="wrap">
@@ -82,6 +95,7 @@
     <div class="kicker">Command palette</div>
     <h1>Everything usually hidden in <em>three levels of menus</em> — now behind a single key.</h1>
     <p>Commands are grouped by the problem they solve: working with messages, conversation pace, group chats, organization, and quick actions without opening a chat.</p>
+      <iframe class="animations" src="messenger-command-demo-en.html" loading="lazy" scrolling="no"></iframe>
   </header>
 
   <section class="category">
@@ -163,7 +177,7 @@
   </section>
 
   <footer>
-    <span>© tiho, 2026</span>
+    <span>© calmness, 2026</span>
     <span>command reference</span>
   </footer>
 </div>

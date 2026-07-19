@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тихо — интерфейс отправки сообщений</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { packages: {'[+]': ['ams']} },
+    svg: { fontCache: 'local' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" id="MathJax-script"></script>
+<style>
+  :root{
+    --ink:#1c1c1a;
+    --ink-soft:#6b6a63;
+    --ink-faint:#a4a299;
+    --paper:#faf9f6;
+    --panel:#ffffff;
+    --line:#e7e4dc;
+    --sage:#4f6f63;
+    --sage-tint:#e7efec;
+    --clay:#c96a5c;
+    --clay-tint:#f8e9e6;
+    --clay-ink:#8a3d31;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--paper);font-family:'Inter',sans-serif;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px 16px;
+  }
+  .app{
+    width:440px;background:var(--panel);border:1px solid var(--line);border-radius:22px;
+    box-shadow:0 30px 70px -35px rgba(28,28,26,0.22);overflow:hidden;
+    display:flex;flex-direction:column;height:700px;position:relative;
+  }
+  .chat-header{
+    padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;
+  }
+  .avatar{
+    width:34px;height:34px;border-radius:50%;background:var(--sage-tint);color:var(--sage);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;
+  }
+  .chat-header h2{font-family:'Newsreader',serif;font-weight:500;font-size:15.5px;}
+  .chat-header p{font-size:11.5px;color:var(--ink-faint);margin-top:1px;}
+
+  .messages{flex:1;padding:20px 22px;display:flex;flex-direction:column;gap:11px;
+    overflow-y:auto;scroll-behavior:smooth;}
+  .messages::-webkit-scrollbar{width:0;}
+  .msg{max-width:78%;padding:9px 13px;border-radius:15px;font-size:13.5px;line-height:1.45;
+    opacity:0;transform:translateY(6px);transition:opacity 0.35s ease, transform 0.35s ease;}
+  .msg.show{opacity:1;transform:translateY(0);}
+  .msg.in{align-self:flex-start;background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:4px;}
+  .msg.out{align-self:flex-end;background:var(--sage-tint);color:var(--sage);border-bottom-right-radius:4px;}
+
+  .msg.file{
+    align-self:flex-end;display:flex;align-items:center;gap:10px;background:var(--panel);
+    border:1px solid var(--line);border-bottom-right-radius:4px;max-width:82%;
+  }
+  .file-icon{width:32px;height:32px;border-radius:8px;background:var(--clay-tint);color:var(--clay-ink);
+    display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+  .file-meta p{margin:0;font-size:13px;font-weight:500;}
+  .file-meta span{font-size:11px;color:var(--ink-faint);}
+
+  .msg.voice{
+    align-self:flex-end;display:flex;align-items:center;gap:8px;background:var(--sage-tint);color:var(--sage);
+    border-bottom-right-radius:4px;font-size:13px;
+  }
+  .wave-mini{display:flex;align-items:center;gap:2px;height:16px;}
+  .wave-mini i{width:2.5px;background:var(--sage);border-radius:2px;display:inline-block;}
+
+  .msg.math{
+    align-self:flex-end;background:var(--panel);border:1px solid var(--line);
+    border-bottom-right-radius:4px;padding:16px 18px;max-width:88%;
+    overflow-x:auto;overflow-y:hidden;
+  }
+  .msg.math mjx-container{margin:0 !important;font-size:122%;}
+  .preview mjx-container{margin:0 !important;font-size:118%;}
+  .preview{overflow-x:auto;overflow-y:hidden;}
+
+  /* live math preview above composer */
+  .preview{
+    margin:0 22px;padding:14px 16px;background:var(--sage-tint);border-radius:12px;
+    font-size:14px;color:var(--sage);opacity:0;max-height:0;overflow:hidden;
+    transition:opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
+  }
+  .preview.show{opacity:1;max-height:420px;margin-bottom:10px;overflow-y:auto;}
+
+  /* attachment chip */
+  .attach-chip{
+    margin:0 22px;display:flex;align-items:center;gap:10px;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:10px 12px;
+    opacity:0;max-height:0;overflow:hidden;transition:opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
+  }
+  .attach-chip.show{opacity:1;max-height:60px;margin-bottom:10px;}
+  .attach-chip .bar{flex:1;height:3px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:5px;}
+  .attach-chip .bar-fill{height:100%;background:var(--clay);width:0%;transition:width 1.4s ease;}
+
+  /* toolbar row */
+  .toolbar{
+    display:flex;align-items:center;gap:6px;padding:0 22px 8px;
+  }
+  .tool-btn{
+    width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--paper);
+    display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-size:13px;
+    transition:background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .tool-btn.active{background:var(--clay-tint);color:var(--clay-ink);border-color:var(--clay-tint);}
+  .tool-btn svg{width:15px;height:15px;stroke:currentColor;}
+  .tool-hint{font-size:11px;color:var(--ink-faint);margin-left:auto;}
+
+  .composer{
+    padding:0 22px 20px;display:flex;align-items:center;gap:10px;
+  }
+  .composer-box{
+    flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 13px;
+    font-size:13.5px;color:var(--ink);background:var(--paper);
+    min-height:20px;display:flex;align-items:center;transition:border-color 0.2s ease, background 0.2s ease;
+  }
+  .composer-box.math-mode{border-color:var(--sage);background:var(--sage-tint);}
+  .composer-box .cmd-part{color:var(--clay-ink);font-family:'JetBrains Mono',monospace;font-size:13px;}
+  .composer-box .math-part{color:var(--sage);font-family:'JetBrains Mono',monospace;font-size:13px;}
+  .caret{
+    display:inline-block;width:1.5px;height:14px;background:var(--ink);margin-left:2px;
+    animation:blink 0.9s steps(1) infinite;vertical-align:middle;
+  }
+  @keyframes blink{50%{opacity:0;}}
+
+  .composer-box.voice-mode{gap:2px;}
+  .wave-live{display:flex;align-items:center;gap:2px;height:16px;flex:1;}
+  .wave-live i{width:3px;background:var(--clay);border-radius:2px;display:inline-block;
+    animation:wave 0.9s ease-in-out infinite;}
+  @keyframes wave{0%,100%{height:5px;}50%{height:16px;}}
+  .rec-timer{font-size:12px;color:var(--clay-ink);font-family:'JetBrains Mono',monospace;}
+
+  .send{
+    width:34px;height:34px;border-radius:10px;background:var(--ink);color:var(--paper);
+    border:none;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;
+  }
+
+  .caption{
+    text-align:center;font-size:12px;color:var(--ink-faint);margin-top:18px;max-width:440px;
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <div class="app">
+    <div class="chat-header">
+      <div class="avatar">АИ</div>
+      <div>
+        <h2>Алина</h2>
+        <p>ответит позже</p>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="msg in show">Скинь конспект по линейной алгебре?</div>
+    </div>
+
+    <div class="preview" id="preview"></div>
+    <div class="attach-chip" id="attachChip"></div>
+
+    <div class="toolbar">
+      <div class="tool-btn" id="attachBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+        </svg>
+      </div>
+      <div class="tool-btn" id="micBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" x2="12" y1="19" y2="22"/>
+        </svg>
+      </div>
+      <span class="tool-hint" id="toolHint">/latex — отправить формулу</span>
+    </div>
+
+    <div class="composer">
+      <div class="composer-box" id="composerBox"><span class="caret"></span></div>
+      <button class="send">↑</button>
+    </div>
+  </div>
+  <p class="caption">Демо по кругу: вложение файла → формула через «/latex» → голосовое сообщение с расшифровкой.</p>
+</div>
+
+<script>
+  const composerBox = document.getElementById('composerBox');
+  const messagesEl = document.getElementById('messages');
+  const previewEl = document.getElementById('preview');
+  const attachChip = document.getElementById('attachChip');
+  const attachBtn = document.getElementById('attachBtn');
+  const micBtn = document.getElementById('micBtn');
+  const toolHint = document.getElementById('toolHint');
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  function renderComposer(html, withCaret){
+    composerBox.innerHTML = html + (withCaret ? '<span class="caret"></span>' : '');
+  }
+
+  function addMessage(html, className){
+    const div = document.createElement('div');
+    div.className = 'msg ' + className;
+    div.innerHTML = html;
+    messagesEl.appendChild(div);
+    requestAnimationFrame(() => div.classList.add('show'));
+    setTimeout(() => {
+      messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+    }, 60);
+    return div;
+  }
+
+  function clearDemoMessages(){
+    document.querySelectorAll('.msg.demo').forEach(el => el.remove());
+  }
+
+  async function typeRaw(fullText, delay, wrapClass){
+    let current = '';
+    for(const ch of fullText){
+      current += ch;
+      renderComposer('<span class="' + wrapClass + '">' + current + '</span>', true);
+      await sleep(delay);
+    }
+  }
+
+  // --- Scenario 1: file attachment ---
+  async function demoAttach(){
+    toolHint.textContent = 'нажмите 📎, чтобы прикрепить файл';
+    attachBtn.classList.add('active');
+    await sleep(600);
+
+    attachChip.innerHTML =
+      '<div class="file-icon">📄</div>' +
+      '<div class="file-meta" style="flex:1;">' +
+        '<p>lecture-linear-algebra.pdf</p>' +
+        '<span>2.4 MB</span>' +
+        '<div class="bar"><div class="bar-fill" id="barFill"></div></div>' +
+      '</div>';
+    attachChip.classList.add('show');
+    await sleep(200);
+    document.getElementById('barFill').style.width = '100%';
+    await sleep(1600);
+
+    attachChip.classList.remove('show');
+    attachBtn.classList.remove('active');
+    addMessage(
+      '<div class="file-icon">📄</div>' +
+      '<div class="file-meta"><p>lecture-linear-algebra.pdf</p><span>2.4 MB · отправлено</span></div>',
+      'file demo'
+    );
+    await sleep(2600);
+  }
+
+  // --- Scenario 2: /latex command ---
+  async function demoLatex(){
+    toolHint.textContent = '/latex — отправить формулу';
+    await typeRaw('/latex', 90, 'cmd-part');
+    await sleep(400);
+
+    composerBox.classList.add('math-mode');
+    const formula =
+      '\\begin{aligned}' +
+      'A &= \\begin{pmatrix} 2 & 1 \\\\ 1 & 2 \\end{pmatrix} \\\\' +
+      '\\det(A-\\lambda I) &= (2-\\lambda)^2 - 1 = \\lambda^2 - 4\\lambda + 3 \\\\' +
+      '&= (\\lambda-1)(\\lambda-3) = 0 \\\\' +
+      '\\lambda_1 &= 1, \\quad \\lambda_2 = 3 \\\\' +
+      'v_1 &= \\begin{pmatrix} 1 \\\\ -1 \\end{pmatrix}, \\quad ' +
+      'v_2 = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix} \\\\' +
+      'A &= P D P^{-1}, \\quad D = \\begin{pmatrix} 1 & 0 \\\\ 0 & 3 \\end{pmatrix}' +
+      '\\end{aligned}';
+    await typeRaw(formula, 8, 'math-part');
+    await sleep(500);
+
+    await MathJax.startup.promise;
+    const node = MathJax.tex2svg(formula, { display: true });
+    const svg = node.querySelector('svg');
+    svg.style.maxWidth = 'none';
+    const rendered = node.innerHTML;
+
+    previewEl.innerHTML = rendered;
+    previewEl.classList.add('show');
+    await sleep(2200);
+
+    previewEl.classList.remove('show');
+    composerBox.classList.remove('math-mode');
+    renderComposer('', true);
+    addMessage(rendered, 'math demo');
+    await sleep(3400);
+  }
+
+  // --- Scenario 3: voice input ---
+  async function demoVoice(){
+    toolHint.textContent = 'удерживайте 🎙, чтобы записать голосовое';
+    micBtn.classList.add('active');
+    composerBox.classList.add('voice-mode');
+
+    const bars = Array.from({length:18}, (_, i) =>
+      '<i style="animation-delay:' + (i * 0.05) + 's;"></i>'
+    ).join('');
+    let seconds = 0;
+    renderComposer(
+      '<div class="wave-live">' + bars + '</div><span class="rec-timer" id="recTimer">0:00</span>',
+      false
+    );
+
+    const timerInterval = setInterval(() => {
+      seconds += 1;
+      const el = document.getElementById('recTimer');
+      if(el) el.textContent = '0:0' + seconds;
+    }, 500);
+
+    await sleep(2400);
+    clearInterval(timerInterval);
+
+    micBtn.classList.remove('active');
+    composerBox.classList.remove('voice-mode');
+    renderComposer('', true);
+
+    const miniBars = Array.from({length:10}, (_, i) =>
+      '<i style="height:' + (5 + (i % 4) * 4) + 'px;"></i>'
+    ).join('');
+    addMessage(
+      '<div class="wave-mini">' + miniBars + '</div>' +
+      '<span>0:03 → «Отправь, пожалуйста, конспект»</span>',
+      'voice demo'
+    );
+    await sleep(2800);
+  }
+
+  async function runDemo(){
+    clearDemoMessages();
+    await demoAttach();
+
+    clearDemoMessages();
+    await demoLatex();
+
+    clearDemoMessages();
+    await demoVoice();
+
+    runDemo();
+  }
+
+  window.addEventListener('load', () => {
+    setTimeout(runDemo, 800);
+  });
+</script>
+
+</body>
+</html>
